@@ -16,10 +16,28 @@ const CreateUser = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic (e.g., send data to a server)
-    console.log('User data submitted:', userData);
+
+    try {
+      const response = await fetch('http://localhost:3000/api/v1/admin/createUser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log('User data submitted successfully:', responseData);
+        // You can add further actions here, such as redirecting or updating state.
+      } else {
+        console.error('Failed to create user. Server returned:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('An error occurred while trying to create user:', error.message);
+    }
   };
 
   return (
