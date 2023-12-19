@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 
 const CreateUser = () => {
   const [userData, setUserData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    userType: 'court', // Default value
-  });
+    type: "court",
+    name: "",
+    id: "",
+    email: "",
+    password: "",
+    phoneNumber: 0
+  }
+  );
 
   const handleChange = (e) => {
     setUserData({
@@ -20,7 +22,7 @@ const CreateUser = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:3000/api/v1/admin/createUser', {
+      const response = await fetch('http://localhost:8000/api/v1/admin/createUser', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,12 +33,15 @@ const CreateUser = () => {
       if (response.ok) {
         const responseData = await response.json();
         console.log('User data submitted successfully:', responseData);
-        // You can add further actions here, such as redirecting or updating state.
+        alert('User data submitted');
       } else {
+        const errorData = await response.json();
         console.error('Failed to create user. Server returned:', response.status, response.statusText);
+        alert('Failed to create user. Error: ' + errorData.message);
       }
     } catch (error) {
       console.error('An error occurred while trying to create user:', error.message);
+      alert('An error occurred while trying to create user: ' + error.message);
     }
   };
 
@@ -74,14 +79,14 @@ const CreateUser = () => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-600">
-              Phone
+            <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-600">
+              phoneNumber
             </label>
             <input
               type="tel"
-              id="phone"
-              name="phone"
-              value={userData.phone}
+              id="phoneNumber"
+              name="phoneNumber"
+              value={userData.phoneNumber}
               onChange={handleChange}
               className="mt-1 p-2 w-full border rounded-md"
               required
@@ -102,13 +107,13 @@ const CreateUser = () => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="userType" className="block text-sm font-medium text-gray-600">
+            <label htmlFor="type" className="block text-sm font-medium text-gray-600">
               User Type
             </label>
             <select
-              id="userType"
-              name="userType"
-              value={userData.userType}
+              id="type"
+              name="type"
+              value={userData.type}
               onChange={handleChange}
               className="mt-1 p-2 w-full border rounded-md"
               required

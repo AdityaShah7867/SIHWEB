@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,20 +12,42 @@ const VerifyLawyer = () => {
     council_name: "",
   });
 
-  const [isModalOpen, setModalOpen] = useState(false); // New state for modal visibility
+  const [lawyers, setLawyers] = useState([]);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [activeLawyer, setActiveLawyer] = useState('')
 
-  const checkRequestId = async (requestID) => {
-    // ... (your existing code for checkRequestId)
-  };
+  useEffect(() => {
+    // Fetch lawyers data when the component mounts
+    fetchLawyers();
+  }, []);
 
-  const checkValidationOfCertification = async () => {
-    // ... (your existing code for checkValidationOfCertification)
-  };
+  const fetchLawyers = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/api/v1/lawyer/getAllLawyers');
+      if (response.status === 200) {
+        setLawyers(response.data.Lawyer);
+      }
+    } catch (error) {
+      console.error("Error fetching lawyers:", error);
+    }
+  }
+
+  const handleAccept = async () => {
+
+    const response = await axios.post(`http://localhost:8000/api/v1/lawyer/verifyLawyer/${activeLawyer}`)
+
+    if (response.status === 200) {
+      toast.success("Lawyer Verified Successfully");
+      fetchLawyers();
+    } else {
+      toast.error("Error in Verifying Lawyer");
+    }
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(FormData);
-    checkValidationOfCertification();
+    // Check validation and perform necessary actions
   };
 
   const onChange = (e) => {
@@ -34,11 +56,14 @@ const VerifyLawyer = () => {
 
   const handleOpenModal = () => {
     setModalOpen(true);
+
   };
 
   const handleCloseModal = () => {
     setModalOpen(false);
   };
+
+
 
   return (
     <div className="abc">
@@ -55,26 +80,31 @@ const VerifyLawyer = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="py-2 px-16 border-b">John Doe</td>
-                <td className="py-2 px-16 border-b">123456</td>
-                <td className="py-2 px-4 border-b">
-                  <span className="inline-block px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">
-                    NOT VERIFIED
-                  </span>
-                </td>
-                <td className="py-2 px-16 border-b">Probono</td>
-                <td className="py-2 px-16 border-b">
-                  <button
-                    type="button"
-                    className="text-blue-500 hover:underline focus:outline-none"
-                    onClick={handleOpenModal}
-                  >
-                    Certificate
-                  </button>
-                </td>
-              </tr>
-              {/* You can add more rows dynamically based on your data */}
+              {lawyers.map((lawyer) => (
+                <tr key={lawyer._id}>
+                  <td className="py-2 px-16 border-b">{lawyer.name}</td>
+                  <td className="py-2 px-16 border-b">{lawyer.LicenseNumber}</td>
+                  <td className="py-2 px-4 border-b">
+                    <span className={`inline-block px-2 py-1 text-xs font-semibold text-white ${lawyer.isVerified ? 'bg-green-500' : 'bg-red-500'} rounded-full`}>
+                      {lawyer.isVerified ? 'VERIFIED' : 'NOT VERIFIED'}
+                    </span>
+                  </td>
+                  <td className="py-2 px-16 border-b">Probono</td>
+                  <td className="py-2 px-16 border-b">
+                    <button
+                      type="button"
+                      className="text-blue-500 hover:underline focus:outline-none"
+                      onClick={() => {
+                        handleOpenModal()
+                        setActiveLawyer(lawyer._id)
+                        // alert(activeLawyer)
+                      }}
+                    >
+                      Certificate
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </center>
@@ -105,7 +135,6 @@ const VerifyLawyer = () => {
                   onClick={handleCloseModal}
                 >
                   <FontAwesomeIcon icon={faTimes} />
-                  
                 </button>
               </div>
 
@@ -125,6 +154,7 @@ const VerifyLawyer = () => {
                   <button
                     type="button"
                     className="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline-green"
+                    onClick={() => handleAccept()}
                   >
                     Accept
                   </button>

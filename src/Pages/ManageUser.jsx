@@ -1,26 +1,57 @@
-// ManageUser.jsx
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const ManageUser = () => {
-  const initialUsers = [
-    { id: 'court123', role: 'court', disabled: false },
-    { id: 'jailer456', role: 'jailer', disabled: true },
-    { id: 'police789', role: 'police', disabled: false },
-  ];
+  const [users, setUsers] = useState([]);
 
-  const [users, setUsers] = useState(initialUsers);
+  useEffect(() => {
+    const fetchAllUsers = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/v1/admin/getAllUsers');
 
-  const toggleDisable = (id) => {
+        if (response.status === 200) {
+          setUsers(response.data.users);
+        } else {
+          console.error('Error fetching users');
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchAllUsers();
+  }, []);
+
+  const toggleDisable = async (id) => {
     setUsers((prevUsers) =>
       prevUsers.map((user) =>
-        user.id === id ? { ...user, disabled: !user.disabled } : user
+        user._id === id ? { ...user, disabled: !user.disabled } : user
       )
     );
+
+    try {
+      const response = await axios.put(`http://localhost:8000/api/v1/admin/disableUser/${id}`);
+
+      if (response.status === 200) {
+        console.log("User disabled successfully");
+      }
+    } catch (error) {
+      console.error("Error disabling user:", error);
+    }
+
+
+
   };
 
-  const deleteUser = (id) => {
-    setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+  const deleteUser = async (id) => {
+    const response = await axios.delete(`http://localhost:8000/api/v1/admin/deleteUser/${id}`)
+
+    if (response.status === 200) {
+      console.log("User deleted successfully");
+      setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
+    } else {
+      console.error("Error deleting user");
+    }
   };
 
   return (
@@ -30,27 +61,30 @@ const ManageUser = () => {
         <thead>
           <tr>
             <th className="py-2 px-4 border-b text-left">ID</th>
-            <th className="py-2 px-4 border-b text-left">Role</th>
+            <th className="py-2 px-4 border-b text-left">Name</th>
+            <th className="py-2 px-4 border-b text-left">Email</th>
+            <th className="py-2 px-4 border-b text-left">Type</th>
             <th className="py-2 px-4 border-b text-left">Actions</th>
           </tr>
         </thead>
         <tbody>
           {users.map((user) => (
-            <tr key={user.id}>
-              <td className="py-2 px-4 border-b">{user.id}</td>
-              <td className="py-2 px-4 border-b">{user.role}</td>
+            <tr key={user._id}>
+              <td className="py-2 px-4 border-b">{user._id}</td>
+              <td className="py-2 px-4 border-b">{user.name}</td>
+              <td className="py-2 px-4 border-b">{user.email}</td>
+              <td className="py-2 px-4 border-b">{user.type}</td>
               <td className="py-2 px-4 border-b">
                 <button
-                  className={`${
-                    user.disabled ? 'bg-green-500' : 'bg-red-500'
-                  } text-white py-1 px-2 mr-2 rounded`}
-                  onClick={() => toggleDisable(user.id)}
+                  className={`${user.isdisabled ? 'bg-green-500' : 'bg-red-500'
+                    } text-white py-1 px-2 mr-2 rounded`}
+                  onClick={() => toggleDisable(user._id)}
                 >
-                  {user.disabled ? 'Enable' : 'Disable'}
+                  {user.isdisabled ? 'Enable' : 'Disable'}
                 </button>
                 <button
                   className="bg-red-500 text-white py-1 px-2 rounded"
-                  onClick={() => deleteUser(user.id)}
+                  onClick={() => deleteUser(user._id)}
                 >
                   Delete
                 </button>
