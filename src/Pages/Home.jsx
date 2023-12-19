@@ -1,9 +1,9 @@
 // Home.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import createUserIcon from './images/a.png';
-import manageUserIcon from './images/b.png';
-import verifyUserIcon from './images/c.png';
+import createUserIcon from '../images/a.png';
+import manageUserIcon from '../images/b.png';
+import verifyUserIcon from '../images/c.png';
 
 const Home = () => {
   return (
