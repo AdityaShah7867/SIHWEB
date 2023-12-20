@@ -8,6 +8,8 @@ import MarketPlace from './MarketPlace';
 import VerifyLawyer from './Pages/VerifyLawyer';
 import Navbar from './Components/Navbar';
 import ManageUser from './Pages/ManageUser';
+import VideoRoom from './Pages/VideoRoom';
+import Dash from './Pages/Dash';
 
 const App = () => {
 
@@ -21,9 +23,11 @@ const App = () => {
 
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Home/>}/>
+        <Route path="/dash" element={<Dash/>}/>
         <Route path="/create-user" element={<CreateUser/>}/>
         <Route path="/verify-lawyer" element={<VerifyLawyer/>}/>
         <Route path="/manage-user" element={<ManageUser/>}/>
+        <Route path="/video" element={<VideoRoom/>}/>
         {/* <Route path="/" element={<MarketPlace/>}/> */}
       
              

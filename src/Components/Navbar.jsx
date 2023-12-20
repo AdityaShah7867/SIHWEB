@@ -75,6 +75,7 @@ const Navbar = () => {
             <Link to="/create-user" className="text-white hover:text-gray-300">Create User</Link>
           <Link to="/verify-lawyer" className="text-white hover:text-gray-300">Verify Laywer</Link>
           <Link to="/manage-user" className="text-white hover:text-gray-300">Officials</Link>
+          <Link to="/dash" className="text-white hover:text-gray-300">Dash</Link>
           <Link to="/manage-user" className="text-white hover:text-gray-300">Logout</Link>
 
 
